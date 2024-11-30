@@ -25,6 +25,7 @@ export const createEvent = async({ event, userId, path}: CreateEventParams) => {
       return JSON.parse(JSON.stringify(newEvent));
       
     } catch (error) {
+      console.log(error);
       handleError(error);
     }
 }
