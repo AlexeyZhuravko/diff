@@ -1,98 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:orientation="horizontal">
 
-    <!-- Поле для ввода названия заметки -->
-    <EditText
-        android:id="@+id/etName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/name_hint"
-        android:importantForAutofill="no"
-        android:minHeight="48dp"
-        android:editable="false"
-        tools:ignore="Autofill,TextFields,VisualLintTextFieldSize" />
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.5"/>
 
-    <!-- Поле для ввода описания заметки -->
-    <EditText
-        android:id="@+id/etDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/description_hint"
-        android:minHeight="48dp"
-        android:editable="false"
-        tools:ignore="Autofill,TextFields,VisualLintTextFieldSize" />
-
-    <!-- Горизонтальный контейнер для кнопок "Добавить" и "Сохранить" -->
-    <LinearLayout
-        style="?android:attr/buttonBarStyle"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp">
-
-        <!-- Кнопка добавления новой заметки -->
-        <Button
-            android:id="@+id/btnAdd"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/add_button"
-            tools:ignore="ButtonStyle,VisualLintButtonSize" />
-
-        <!-- Кнопка сохранения текущей заметки -->
-        <Button
-            android:id="@+id/btnEdit"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/edit_button"
-            tools:ignore="ButtonStyle,VisualLintButtonSize" />
-    </LinearLayout>
-
-    <!-- Горизонтальный контейнер для стрелочек "Влево" и "Вправо" -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal">
-
-        <!-- Кнопка для перехода к предыдущей заметке -->
-        <ImageButton
-            android:id="@+id/btnPrev"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:adjustViewBounds="true"
-            android:importantForAccessibility="no"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_prev"
-            tools:ignore="TouchTargetSizeCheck" />
-
-        <!-- Кнопка для перехода к следующей заметке -->
-        <ImageButton
-            android:id="@+id/btnNext"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:adjustViewBounds="true"
-            android:importantForAccessibility="no"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_next"
-            tools:ignore="TouchTargetSizeCheck" />
-    </LinearLayout>
-
-    <!-- Кнопка для показа последней добавленной заметки -->
-    <Button
-        android:id="@+id/btnShowNote"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/show_last_note_button"
-        tools:ignore="VisualLintButtonSize" />
+    <FrameLayout
+        android:id="@+id/detail_container"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.5"/>
 </LinearLayout>

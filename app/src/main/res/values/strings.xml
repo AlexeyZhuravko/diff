@@ -1,9 +1,3 @@
 <resources>
-    <string name="app_name">Personal Organizer</string>
-    <string name="name_hint">Название</string>
-    <string name="description_hint">Описание</string>
-    <string name="add_button">Добавить</string>
-    <string name="edit_button">Редактировать</string>
-    <string name="save_button">Сохранить</string>
-    <string name="show_last_note_button">Показать последнюю заметку</string>
+    <string name="app_name">android5</string>
 </resources>
