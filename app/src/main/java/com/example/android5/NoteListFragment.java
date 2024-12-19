@@ -5,34 +5,68 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import java.util.ArrayList;
+import java.util.List;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class NoteListFragment extends Fragment {
 
-    private ListView listView;
-    private ArrayList<Note> notes;
-    private OnNoteSelectedListener listener;
-
+    private RecyclerView recyclerView; // Список для отображения заметок
+    private ArrayList<Note> notes; // Список заметок
+    private NoteAdapter adapter; // Адаптер для RecyclerView
+    private OnNoteSelectedListener listener; // Слушатель выбора заметки
+    // Интерфейс для передачи выбранной заметки в Activity
     public interface OnNoteSelectedListener {
         void onNoteSelected(Note note);
+    }
+    // Сохраняет состояние при повороте экрана
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("notes", notes); // Сохраняем список заметок
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //container - это ViewGroup, в который добавляется разметка фрагмента, false - указывает, что созданное представление (fragment_note_list) не должно автоматически добавляться в контейнер
         View rootView = inflater.inflate(R.layout.fragment_note_list, container, false);
-        listView = rootView.findViewById(R.id.note_list);
-        notes = getNotes(); // Заполните вашими заметками
+        recyclerView = rootView.findViewById(R.id.note_list);
 
-        ArrayAdapter<Note> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, notes);
-        listView.setAdapter(adapter);
+        // Загружаем данные из базы данных
+        new Thread(() -> {
+            AppDatabase db = DatabaseClient.getInstance(getContext()); // Получаем доступ к базе данных
+            List<Note> notesFromDb = db.noteDao().getAllNotes();  // Получаем все заметки из базы данных
 
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-            Note selectedNote = notes.get(position);
-            listener.onNoteSelected(selectedNote);
-        });
+            // Обновляем UI с полученными заметками
+            getActivity().runOnUiThread(() -> {
+                notes = new ArrayList<>(notesFromDb); // Сохраняем загруженные заметки в список
+                adapter = new NoteAdapter(notes, new NoteAdapter.OnNoteClickListener() { // Создаем адаптер для RecyclerView
+                    @Override
+                    public void onNoteClick(Note note) {
+                        if (listener != null) {
+                            listener.onNoteSelected(note);
+                        }
+                    }
+
+                    @Override
+                    public void onCheckboxToggle(Note note, boolean isChecked) {
+                        note.setCompleted(isChecked); // Обработка изменения состояния чекбокса (выполнена или нет)
+
+                        new Thread(() -> {
+                            AppDatabase db = DatabaseClient.getInstance(getContext());
+                            db.noteDao().update(note);  // Обновляем заметку в базе данных
+                        }).start(); // Запускаем поток для обновления заметки
+                    }
+                });
+                // Настройка RecyclerView
+                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity())); // Устанавливаем менеджер компоновки
+                recyclerView.setAdapter(adapter); // Устанавливаем адаптер для RecyclerView
+            });
+        }).start(); // Запускаем поток
 
         return rootView;
     }
@@ -41,18 +75,14 @@ public class NoteListFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnNoteSelectedListener) {
-            listener = (OnNoteSelectedListener) context;
+            listener = (OnNoteSelectedListener) context; // Связываем listener с Activity
         } else {
             throw new RuntimeException(context.toString() + " must implement OnNoteSelectedListener");
         }
     }
 
-    // Метод для получения списка заметок
-    private ArrayList<Note> getNotes() {
-        ArrayList<Note> notes = new ArrayList<>();
-        // Добавьте свои заметки в список
-        notes.add(new Note("Заметка 1", "Содержимое заметки 1"));
-        notes.add(new Note("Заметка 2", "Содержимое заметки 2"));
-        return notes;
+    public void addNewNote(Note note) {
+        notes.add(note); // Добавляем новую заметку в список
+        adapter.notifyItemInserted(notes.size() - 1); // Уведомляем адаптер об изменении
     }
 }
